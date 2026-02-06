@@ -2,22 +2,36 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
 
-    
+    // MARK: - IB Outlets
     @IBOutlet private weak var imageView: UIImageView!
+    
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
     
+    // MARK: - Private Properties
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
     
+    // MARK: - View Lifecycles
     override func viewDidLoad() {
         super.viewDidLoad()
         imageView.layer.masksToBounds = true
         startQuiz()
     }
     
+    // MARK: - IB Actions
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+        onButtonClick(sender: sender, userAnswer: false)
+    }
+    
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        onButtonClick(sender: sender, userAnswer: true)
+    }
+    
+    // MARK: - Private Methods
     private func startQuiz() {
         currentQuestionIndex = 0
         correctAnswers = 0
@@ -26,7 +40,7 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        return QuizStepViewModel(
+        QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex+1)/\(questions.count)")
@@ -54,7 +68,7 @@ final class MovieQuizViewController: UIViewController {
         }
 
         alert.addAction(action)
-        self.present(alert, animated: true, completion: nil)
+        present(alert, animated: true, completion: nil)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -93,15 +107,6 @@ final class MovieQuizViewController: UIViewController {
         sender.isEnabled = false
         showAnswerResult(isCorrect: userAnswer == correctAnswer)
     }
-    
-    @IBAction private func noButtonClicked(_ sender: UIButton) {
-        onButtonClick(sender: sender, userAnswer: false)
-    }
-    
-    @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        onButtonClick(sender: sender, userAnswer: true)
-    }
-    
 }
 
 private struct QuizQuestion {
