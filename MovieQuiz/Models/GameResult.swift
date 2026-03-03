@@ -13,6 +13,6 @@ struct GameResult {
     let date: Date
     
     func isBetterThan(result: GameResult) -> Bool {
-        self.correctAnswers >= result.correctAnswers
+        correctAnswers >= result.correctAnswers
     }
 }

@@ -11,7 +11,7 @@ final class StatisticService: StatisticServiceProtocol {
     // MARK: - Public properties
     var gamesCount: Int {
         get {
-            return storage.integer(forKey: Keys.gamesCount.rawValue)
+            storage.integer(forKey: Keys.gamesCount.rawValue)
         }
         set {
             storage.set(newValue, forKey: Keys.gamesCount.rawValue)
@@ -45,8 +45,9 @@ final class StatisticService: StatisticServiceProtocol {
     }
     var totalAccuracy: Double {
         get {
-            if totalQuestionsAsked <= 0 { return 0 }
-            return Double(totalCorrectAnswers) / Double(totalQuestionsAsked) * 100
+            totalQuestionsAsked <= 0 ? 0 : Double(totalCorrectAnswers) / Double(
+                totalQuestionsAsked
+            ) * 100
         }
     }
     
@@ -55,8 +56,7 @@ final class StatisticService: StatisticServiceProtocol {
     
     private var totalCorrectAnswers: Int {
         get {
-            return storage
-                .integer(forKey: Keys.totalCorrectAnswers.rawValue)
+            storage.integer(forKey: Keys.totalCorrectAnswers.rawValue)
         }
         set {
             storage.set(newValue, forKey: Keys.totalCorrectAnswers.rawValue)
@@ -64,8 +64,7 @@ final class StatisticService: StatisticServiceProtocol {
     }
     private var totalQuestionsAsked: Int {
         get {
-            return storage
-                .integer(forKey: Keys.totalQuestionsAsked.rawValue)
+            storage.integer(forKey: Keys.totalQuestionsAsked.rawValue)
         }
         set {
             storage.set(newValue, forKey: Keys.totalQuestionsAsked.rawValue)
