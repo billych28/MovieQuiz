@@ -7,11 +7,17 @@
 import Foundation
 
 struct NetworkClient {
-    
+    // MARK: - Private properties
+    private enum Constants {
+        static let httpStatusCodeOk = 200
+        static let httpStatusCodeRedirection = 300
+    }
+
     private enum NetworkError: Error {
         case codeError
     }
     
+    // MARK: - Public methods
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void) {
         let request = URLRequest(url: url)
         let task = URLSession.shared.dataTask(
@@ -23,12 +29,12 @@ struct NetworkClient {
             }
             
             if let response = response as? HTTPURLResponse,
-               response.statusCode < 200 || response.statusCode >= 300 {
+               response.statusCode < Constants.httpStatusCodeOk || response.statusCode >= Constants.httpStatusCodeRedirection {
                 handler(.failure(NetworkError.codeError))
                 return
             }
             
-            guard let data = data else { return }
+            guard let data else { return }
             handler(.success(data))
         }
         task.resume()

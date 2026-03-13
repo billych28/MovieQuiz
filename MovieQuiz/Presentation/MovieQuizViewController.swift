@@ -1,7 +1,6 @@
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-
     // MARK: - IB Outlets
     @IBOutlet private weak var imageView: UIImageView!
     
@@ -53,7 +52,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         let viewModel = convert(model: question)
         
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.showQuestion(quiz: viewModel)
         }
     }
@@ -99,7 +98,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.layer.borderWidth = 8
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.showNextQuestionOrResults()
             self.noButton.isEnabled = true
             self.yesButton.isEnabled = true
@@ -146,7 +145,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             message: result.message,
             buttonText: result.buttonText,
         ) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             
             self.correctAnswers = 0
             self.currentQuestionIndex = 0
@@ -156,7 +155,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     }
     
     private func onButtonClick(sender: UIButton, userAnswer: Bool) {
-        guard let currentQuestion = currentQuestion else { return }
+        guard let currentQuestion else { return }
         let correctAnswer = currentQuestion.correctAnswer
         sender.isEnabled = false
         showAnswerResult(isCorrect: userAnswer == correctAnswer)
@@ -173,7 +172,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             message: message,
             buttonText: "Повторить"
         ) { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             self.startQuiz()
         }
         alertPresenter.show(controller: self, model: model)

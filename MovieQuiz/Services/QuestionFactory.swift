@@ -26,7 +26,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
     // MARK: - Public methods
     func requestNextQuestion() {
         DispatchQueue.global().async { [weak self] in
-            guard let self = self else { return }
+            guard let self else { return }
             let index = (0..<self.movies.count).randomElement() ?? 0
             guard let movie = movies[safe: index] else { return }
             
@@ -46,7 +46,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
             )
             
             DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
+                guard let self else { return }
                 self.delegate?.didReceiveNextQuestion(question: question)
             }
         }
@@ -55,7 +55,7 @@ final class QuestionFactory: QuestionFactoryProtocol {
     func loadData() {
         moviesLoader.loadMovies { [weak self] result in
             DispatchQueue.main.async {
-                guard let self = self else { return }
+                guard let self else { return }
                 switch result {
                 case .success(let movies):
                     self.movies = movies.items
