@@ -9,62 +9,92 @@ import Foundation
 
 final class QuestionFactory: QuestionFactoryProtocol {
     // MARK: - Private properties
-    private let questions: [QuizQuestion] = [
-        QuizQuestion(
-            imageName: "The Godfather",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "The Dark Knight",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "Kill Bill",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "The Avengers",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "Deadpool",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "The Green Knight",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: true),
-        QuizQuestion(
-            imageName: "Old",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: false),
-        QuizQuestion(
-            imageName: "The Ice Age Adventures of Buck Wild",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: false),
-        QuizQuestion(
-            imageName: "Tesla",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: false),
-        QuizQuestion(
-            imageName: "Vivarium",
-            text: "Рейтинг этого фильма больше чем 6?",
-            correctAnswer: false)
-    ]
-    
+    private let moviesLoader: MoviesLoading
     private weak var delegate: QuestionFactoryDelegate?
     
+    private var movies: [MostPopularMovie] = []
+    
     // MARK: - Initializers
-    init(delegate: QuestionFactoryDelegate? = nil) {
+    init(
+        moviesLoader: MoviesLoading,
+        delegate: QuestionFactoryDelegate? = nil
+    ) {
+        self.moviesLoader = moviesLoader
         self.delegate = delegate
     }
     
     // MARK: - Public methods
     func requestNextQuestion() {
-        guard let index = (0..<questions.count).randomElement() else {
-            return
+        DispatchQueue.global().async { [weak self] in
+            guard let self else { return }
+            let index = (0..<self.movies.count).randomElement() ?? 0
+            guard let movie = movies[safe: index] else { return }
+            
+            var imageData = Data()
+            
+            do {
+                imageData = try Data(contentsOf: movie.resizedImageUrl)
+            } catch {
+                print("Failed to load image")
+            }
+            
+            let rating = Float(movie.rating) ?? 0
+                    
+            let question = convertQuizQuestion(
+                imageData: imageData,
+                rating: rating
+            )
+            
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                self.delegate?.didReceiveNextQuestion(question: question)
+            }
         }
-        let question = questions[safe: index]
-        delegate?.didReceiveNextQuestion(question: question)
+    }
+    
+    func loadData() {
+        moviesLoader.loadMovies { [weak self] result in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                switch result {
+                case .success(let movies):
+                    self.movies = movies.items
+                    self.delegate?.didLoadDataFromServer()
+                case .failure(let error):
+                    self.delegate?.didFailToLoadData(with: error)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Private methods
+    private func convertQuizQuestion(imageData: Data, rating: Float) -> QuizQuestion {
+        let ratingInt = Int(rating.rounded())
+        let randomInt = Int.random(in: 3...9)
+        let questionType = QuizQuestionType.allCases.randomElement() ?? .greater
+    
+        let (text, correctAnswer) = switch questionType {
+        case .greater:
+            (
+                "Рейтинг этого фильма больше чем \(randomInt)?",
+                ratingInt > randomInt
+            )
+        case .less:
+            (
+                "Рейтинг этого фильма меньше чем \(randomInt)?",
+                ratingInt < randomInt
+            )
+        case .equal:
+            (
+                "Рейтинг этого фильма равен \(randomInt)?",
+                ratingInt == randomInt
+            )
+        }
+        
+        return QuizQuestion(
+            imageData: imageData,
+            text: text,
+            correctAnswer: correctAnswer
+        )
     }
 }
