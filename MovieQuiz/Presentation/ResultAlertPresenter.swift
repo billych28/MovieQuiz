@@ -13,6 +13,7 @@ final class ResultAlertPresenter {
             title: model.title,
             message: model.message,
             preferredStyle: .alert)
+        alert.view.accessibilityIdentifier = "Alert"
         
         let action = UIAlertAction(
             title: model.buttonText,
@@ -21,6 +22,7 @@ final class ResultAlertPresenter {
             model.completion()
         }
 
+        action.accessibilityIdentifier = "Alert action"
         alert.addAction(action)
 
         vc.present(alert, animated: true, completion: nil)
