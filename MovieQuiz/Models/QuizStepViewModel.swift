@@ -5,7 +5,7 @@
 //  Created by Мамытов Руслан on 17.02.2026.
 //
 
-import UIKit
+import Foundation
 
 struct QuizStepViewModel {
     let image: Data

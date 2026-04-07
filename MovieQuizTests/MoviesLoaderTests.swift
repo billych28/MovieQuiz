@@ -11,7 +11,7 @@ import XCTest
 final class MoviesLoaderTests: XCTestCase {
     func testSuccessLoading() throws {
         // Given
-        let stubNetworkClient = StubNetworkClient(emulateError: false)
+        let stubNetworkClient = StubNetworkClientMock(emulateError: false)
         let sut = MoviesLoader(networkClient: stubNetworkClient)
             
         // When
@@ -32,7 +32,7 @@ final class MoviesLoaderTests: XCTestCase {
         
     func testFailureLoading() throws {
         // Given
-        let stubNetworkClient = StubNetworkClient(emulateError: true)
+        let stubNetworkClient = StubNetworkClientMock(emulateError: true)
         let sut = MoviesLoader(networkClient: stubNetworkClient)
             
         // When

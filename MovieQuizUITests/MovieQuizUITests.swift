@@ -29,50 +29,54 @@ final class MovieQuizUITests: XCTestCase {
 
     @MainActor
     func testYesButton() throws {
+        // Given
         sleep(3)
-        
         let indexLabel = app.staticTexts["Index"]
         let firstPosterData = app.images["Poster"].screenshot().pngRepresentation
         
+        // When
         app.buttons["Yes"].tap()
         sleep(3)
         
+        // Then
         let secondPosterData = app.images["Poster"].screenshot().pngRepresentation
-        
         XCTAssertNotEqual(firstPosterData, secondPosterData)
         XCTAssertEqual(indexLabel.label, "2/10")
     }
     
     @MainActor
     func testNoButton() throws {
+        // Given
         sleep(3)
-        
         let indexLabel = app.staticTexts["Index"]
         let firstPosterData = app.images["Poster"].screenshot().pngRepresentation
         
+        // When
         app.buttons["No"].tap()
         sleep(3)
         
+        // Then
         let secondPosterData = app.images["Poster"].screenshot().pngRepresentation
-        
         XCTAssertNotEqual(firstPosterData, secondPosterData)
         XCTAssertEqual(indexLabel.label, "2/10")
     }
     
     @MainActor
     func testGameResultsAlertShow() throws {
+        // Given
         sleep(3)
-        
         let yesButton = app.buttons["Yes"]
+        
+        // When
         for _ in 0..<10 {
             yesButton.tap()
             sleep(3)
         }
-                
+        
+        // Then
         let alert = app.alerts["Alert"]
         let alertLabel = alert.label
         let alertAction = alert.buttons.firstMatch.label
-        
         XCTAssertTrue(alert.exists)
         XCTAssertEqual(alertLabel, "Этот раунд окончен!")
         XCTAssertEqual(alertAction, "Сыграть ещё раз")
@@ -80,21 +84,21 @@ final class MovieQuizUITests: XCTestCase {
     
     @MainActor
     func testGameResultsAlertDismiss() throws {
+        // Given
         sleep(3)
-        
         let yesButton = app.buttons["Yes"]
         for _ in 0..<10 {
             yesButton.tap()
             sleep(3)
         }
-                
         let alert = app.alerts["Alert"]
-        alert.buttons.firstMatch.tap()
         
+        // When
+        alert.buttons.firstMatch.tap()
         sleep(2)
         
+        // Then
         let indexLabel = app.staticTexts["Index"]
-        
         XCTAssertFalse(alert.exists)
         XCTAssertEqual(indexLabel.label, "1/10")
     }

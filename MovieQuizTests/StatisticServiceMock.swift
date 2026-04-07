@@ -7,7 +7,7 @@
 import Foundation
 @testable import MovieQuiz
 
-final class StatisticServiceStub: StatisticServiceProtocol {
+final class StatisticServiceMock: StatisticServiceProtocol {
     var gamesCount: Int = 0
     var bestGame: GameResult = GameResult(
         correctAnswers: 0,

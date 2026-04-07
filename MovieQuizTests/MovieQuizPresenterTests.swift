@@ -9,6 +9,12 @@ import XCTest
 
 final class MovieQuizPresenterTests: XCTestCase {
     
+    // MARK: - Properties
+    
+    private var viewControllerMock: MovieQuizViewControllerMock!
+    private var questionFactoryMock: QuestionFactoryMock!
+    private var sut: MovieQuizPresenter!
+    
     private enum TestError: Error, LocalizedError {
         case connectionFailed
         
@@ -17,15 +23,28 @@ final class MovieQuizPresenterTests: XCTestCase {
         }
     }
     
-    func testStartQuiz() throws {
-        // Given
-        let viewControllerMock = MovieQuizViewControllerMock()
-        let questionFactoryMock = QuestionFactoryMock()
-        let sut = MovieQuizPresenter(
+    // MARK: - Lifecycle
+    
+    override func setUp() {
+        super.setUp()
+        
+        viewControllerMock = MovieQuizViewControllerMock()
+        questionFactoryMock = QuestionFactoryMock()
+        sut = MovieQuizPresenter(
             viewController: viewControllerMock,
             questionFactory: questionFactoryMock
         )
+    }
+    
+    override func tearDown() {
+        viewControllerMock = nil
+        questionFactoryMock = nil
+        sut = nil
         
+        super.tearDown()
+    }
+    
+    func testStartQuiz() throws {
         // When
         sut.startQuiz()
         
@@ -35,14 +54,6 @@ final class MovieQuizPresenterTests: XCTestCase {
     }
     
     func testDidLoadDataFromServer() throws {
-        // Given
-        let viewControllerMock = MovieQuizViewControllerMock()
-        let questionFactoryMock = QuestionFactoryMock()
-        let sut = MovieQuizPresenter(
-            viewController: viewControllerMock,
-            questionFactory: questionFactoryMock
-        )
-        
         // When
         sut.didLoadDataFromServer()
         
@@ -52,10 +63,6 @@ final class MovieQuizPresenterTests: XCTestCase {
     }
     
     func testDidFailToLoadData() throws {
-        // Given
-        let viewControllerMock = MovieQuizViewControllerMock()
-        let sut = MovieQuizPresenter(viewController: viewControllerMock)
-        
         // When
         sut.didFailToLoadData(with: TestError.connectionFailed)
         
@@ -69,8 +76,6 @@ final class MovieQuizPresenterTests: XCTestCase {
     
     func testConvert() throws {
         // Given
-        let sut = MovieQuizPresenter()
-                
         let emptyData = Data()
         let question = QuizQuestion(
             imageData: emptyData,
@@ -88,10 +93,6 @@ final class MovieQuizPresenterTests: XCTestCase {
     }
     
     func testShowNextQuestionOrResults() throws {
-        // Given
-        let questionFactoryMock = QuestionFactoryMock()
-        let sut = MovieQuizPresenter(questionFactory: questionFactoryMock)
-        
         // When
         sut.showNextQuestionOrResults()
         
